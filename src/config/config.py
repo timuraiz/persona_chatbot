@@ -9,6 +9,9 @@ BOT_REPLIES = {
     'commands': {
         'start': 'Hello! This bot provides an opportunity to talk with any persona that you want!',
         'set_persona': 'Provide me description of persona that you want to talk with'
+    },
+    'general': {
+        'bot_is_not_allowed': 'This bot isn\'t allowed to you'
     }
 }
 

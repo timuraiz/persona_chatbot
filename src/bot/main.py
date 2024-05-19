@@ -8,6 +8,7 @@ from src.bot.handlers import (
     persona_router
 )
 from src.bot.db import DatabaseManager
+from src.bot.middlewares import CheckAccessMiddleware
 
 logging.basicConfig(level=logging.INFO)
 
@@ -26,6 +27,10 @@ async def main():
         base_router,
         persona_router
     )
+
+    # Setup custom logging middleware
+    base_router.message.middleware(CheckAccessMiddleware())
+    persona_router.message.middleware(CheckAccessMiddleware())
 
     await bot.delete_webhook(drop_pending_updates=True)
     try:

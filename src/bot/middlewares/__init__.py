@@ -1,0 +1,1 @@
+from src.bot.middlewares.base_middleware import CheckAccessMiddleware
