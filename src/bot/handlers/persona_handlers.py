@@ -7,6 +7,7 @@ from src.bot.states import SetPersona, ChatWithPersona
 from src.bot.tables import Persona
 from src.config.config import BOT_REPLIES
 from src.bot.utils.keyboard import get_bye_button
+from src.bot.utils.gpt import GptAPI
 
 router = Router()
 
@@ -44,9 +45,9 @@ async def list_personas(message: Message):
 @router.message(Command("talk_with"))
 async def talk_with(message: Message, state: FSMContext):
     persona_name = message.text.strip().split()[1]
-    persona: Persona = await Persona.get_by_name(persona_name)
+    persona: Persona = await Persona.get_by_name(owner_id=message.chat.id, name=persona_name)
     if persona:
-        await state.update_data(name=persona.description)
+        await state.update_data(persona=persona.description)
         await state.set_state(ChatWithPersona.in_chat)
     await message.answer(
         BOT_REPLIES['commands']['talk_with']['found'] if persona else BOT_REPLIES['commands']['talk_with']['not_found'],
@@ -56,7 +57,9 @@ async def talk_with(message: Message, state: FSMContext):
 
 @router.message(ChatWithPersona.in_chat, F.text.lower() != 'bye')
 async def talking(message: Message, state: FSMContext):
-    generated_text = 'generated text'
+    user_data = await state.get_data()
+    api = GptAPI()
+    generated_text = await api.ask(user_msg=message.text, persona=user_data['persona'])
     await message.answer(generated_text, reply_markup=get_bye_button())
 
 

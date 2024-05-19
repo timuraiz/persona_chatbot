@@ -67,7 +67,7 @@ class User(Base, ModelAdmin):
     __mapper_args__ = {'eager_defaults': True}
 
     @classmethod
-    async def get(cls, id):
+    async def get(cls, id: int):
         query = sa.select(cls).where(cls.chat_id == id)
         results = await async_db_session.execute(query)
         result = results.one_or_none()
@@ -92,8 +92,8 @@ class Persona(Base, ModelAdmin):
         return results.all()
 
     @classmethod
-    async def get_by_name(cls, name: str):
-        query = sa.select(cls).where(cls.name == name)
+    async def get_by_name(cls, owner_id: int, name: str):
+        query = sa.select(cls).where(sa.and_(cls.name == name, cls.owner_id == owner_id))
         results = await async_db_session.execute(query)
         result = results.one_or_none()
         if result is not None:
