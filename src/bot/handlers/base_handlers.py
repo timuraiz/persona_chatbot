@@ -2,18 +2,16 @@ from aiogram import Router, F
 from aiogram.filters import Command
 from aiogram.types import Message, ReplyKeyboardRemove
 
-from src.bot.utils.keyboard import get_yes_no_kb
 from src.config.config import BOT_REPLIES
-from src.bot.db import DatabaseManager
+from src.bot.tables import User
 
 router = Router()
-db_manager = DatabaseManager()
 
 
 @router.message(Command('start'))
 async def cmd_start(message: Message):
     await message.answer(BOT_REPLIES['commands']['start'])
-    await db_manager.add_user(message.chat.id)
+    await User.create(chat_id=message.chat.id)
 
 # @router.message(F.text.lower() == "да")
 # async def answer_yes(message: Message):

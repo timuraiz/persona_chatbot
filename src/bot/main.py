@@ -7,21 +7,16 @@ from src.bot.handlers import (
     base_router,
     persona_router
 )
-from src.bot.db import DatabaseManager
 from src.bot.middlewares import CheckAccessMiddleware
+from src.bot.tables import async_db_session
 
 logging.basicConfig(level=logging.INFO)
 
-bot = Bot(token=config.BOT_TOKEN.get_secret_value())
-
-dp = Dispatcher()
-
 
 async def main():
-    db_manager = DatabaseManager()
-    await db_manager.connect()
     bot = Bot(token=config.BOT_TOKEN.get_secret_value())
     dp = Dispatcher()
+    await async_db_session.init()
 
     dp.include_routers(
         base_router,
@@ -38,7 +33,6 @@ async def main():
     finally:
         await dp.storage.close()
         await bot.session.close()
-        await db_manager.disconnect()
 
 
 if __name__ == "__main__":

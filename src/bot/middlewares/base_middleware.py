@@ -3,10 +3,8 @@ from aiogram import BaseMiddleware
 from aiogram.types import Message
 import logging
 
-from src.bot.db import DatabaseManager
+from src.bot.tables import User
 from src.config.config import BOT_REPLIES
-
-db_manager = DatabaseManager()
 
 
 class CheckAccessMiddleware(BaseMiddleware):
@@ -17,7 +15,7 @@ class CheckAccessMiddleware(BaseMiddleware):
             data: Dict[str, Any]
     ) -> Any:
         logging.info(f"Checking access to the bot for chat_id={message.chat.id}")
-        exists = await db_manager.user_exists(message.chat.id)
+        exists = await User.get(message.chat.id)
         if exists:
             await handler(message, data)
             logging.info("Handler was processed")

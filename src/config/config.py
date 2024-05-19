@@ -8,7 +8,17 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 BOT_REPLIES = {
     'commands': {
         'start': 'Hello! This bot provides an opportunity to talk with any persona that you want!',
-        'set_persona': 'Provide me description of persona that you want to talk with'
+        'set_persona': {
+            'load_name': 'Give name to new persona',
+            'load_persona': 'Provide me description of persona that you want to talk with',
+            'saved': 'Now you are able to talk with desired personality. '
+                     'Use /list_personas to see all available personas'
+        },
+        'talk_with': {
+            'found': 'Your persona is ready. Try it! If you want to stop, say "bye"',
+            'not_found': 'You do not have such persona',
+            'bye': 'Have a nice day. Bye!'
+        }
     },
     'general': {
         'bot_is_not_allowed': 'This bot isn\'t allowed to you'
