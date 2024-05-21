@@ -35,14 +35,13 @@ async_db_session = AsyncDatabaseSession()
 class ModelAdmin:
     @classmethod
     async def create(cls, **kwargs):
-        a = 1
         async_db_session.add(cls(**kwargs))
         await async_db_session.commit()
 
     @classmethod
     async def update(cls, id, **kwargs):
         query = (
-            sa.sqlalchemy_update(cls)
+            sa.update(cls)
             .where(cls.id == id)
             .values(**kwargs)
             .execution_options(synchronize_session="fetch")
@@ -59,16 +58,60 @@ class ModelAdmin:
         return result
 
 
+# class User(Base, ModelAdmin):
+#     __tablename__ = 'users'
+#
+#     chat_id = Column(Integer, primary_key=True, unique=True)
+#     personas = relationship('Persona', back_populates='owner')
+#     __mapper_args__ = {'eager_defaults': True}
+#
+#     @classmethod
+#     async def get(cls, id: int):
+#         query = sa.select(cls).where(cls.chat_id == id)
+#         results = await async_db_session.execute(query)
+#         result = results.one_or_none()
+#         if result is not None:
+#             result, = result
+#         return result
+#
+#
+# class Persona(Base, ModelAdmin):
+#     __tablename__ = 'personas'
+#
+#     id = Column(Integer, primary_key=True)
+#     owner_id = Column(Integer, ForeignKey('users.chat_id'), nullable=False)
+#     name = Column(String, nullable=False)
+#     description = Column(Text, nullable=False)
+#     owner = relationship('User')
+#
+#     @classmethod
+#     async def all(cls, owner_id: int):
+#         query = sa.select(cls).where(cls.owner_id == owner_id)
+#         results = await async_db_session.execute(query)
+#         return results.all()
+#
+#     @classmethod
+#     async def get_by_name(cls, owner_id: int, name: str):
+#         query = sa.select(cls).where(sa.and_(cls.name == name, cls.owner_id == owner_id))
+#         results = await async_db_session.execute(query)
+#         result = results.one_or_none()
+#         if result is not None:
+#             result, = result
+#         return result
+
+
 class User(Base, ModelAdmin):
     __tablename__ = 'users'
 
-    chat_id = Column(Integer, primary_key=True, unique=True)
-    personas = relationship('Persona', back_populates='owner')
-    __mapper_args__ = {'eager_defaults': True}
+    id = Column(Integer, primary_key=True)
+    username = Column(String, nullable=False)
+    chat_id = Column(Integer, unique=True, nullable=True)
+
+    personas = relationship('Persona', back_populates='owner', cascade="all, delete-orphan")
 
     @classmethod
-    async def get(cls, id: int):
-        query = sa.select(cls).where(cls.chat_id == id)
+    async def get_by_username(cls, username):
+        query = sa.select(cls).where(cls.username == username)
         results = await async_db_session.execute(query)
         result = results.one_or_none()
         if result is not None:
@@ -80,10 +123,11 @@ class Persona(Base, ModelAdmin):
     __tablename__ = 'personas'
 
     id = Column(Integer, primary_key=True)
-    owner_id = Column(Integer, ForeignKey('users.chat_id'), nullable=False)
+    owner_id = Column(Integer, ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
+
     name = Column(String, nullable=False)
     description = Column(Text, nullable=False)
-    owner = relationship('User')
+    owner = relationship('User', back_populates='personas')
 
     @classmethod
     async def all(cls, owner_id: int):
@@ -93,11 +137,9 @@ class Persona(Base, ModelAdmin):
 
     @classmethod
     async def get_by_name(cls, owner_id: int, name: str):
-        query = sa.select(cls).where(sa.and_(cls.name == name, cls.owner_id == owner_id))
+        query = sa.select(cls).where(cls.name == name, cls.owner_id == owner_id)
         results = await async_db_session.execute(query)
-        result = results.one_or_none()
-        if result is not None:
-            result, = result
+        result = results.scalar_one_or_none()
         return result
 
 
