@@ -42,8 +42,15 @@ class Settings(BaseSettings):
     DATABASE_URL: StrictStr
     GPT_TOKEN: SecretStr
 
-    model_config = SettingsConfigDict(env_file=f'{current_dir}/.env',
-                                      env_file_encoding='utf-8')
+    # class Config:
+    #     # Assuming 'current_dir' is defined; otherwise, you might use os.getcwd() or similar
+    #     env_file = os.path.join(current_dir, '.env')
+    #     env_file_encoding = 'utf-8'
+    #     # Use environment variables if .env file does not exist
+    #     env_file_encoding = 'utf-8'
+    #     if not os.path.isfile(env_file):
+    #         env_file = None  # This disables loading from a non-existent .env file
 
 
+# Usage
 config = Settings()
