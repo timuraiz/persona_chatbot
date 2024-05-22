@@ -18,6 +18,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Debug Output
+        run: |
+          echo "Running deployment with IMAGE_TAG: $IMAGE_TAG"
+          echo "Confirming secret keys are set..."
+          if [ -z "${{ secrets.YANDEX_SA_JSON }}" ]; then
+            echo "YANDEX_SA_JSON is not set."
+          else
+            echo "YANDEX_SA_JSON is set."
+          fi
+
       - name: Login to Yandex Cloud Container Registry
         uses: yc-actions/yc-cr-login@v1
         with:
