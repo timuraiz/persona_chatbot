@@ -13,7 +13,6 @@ stop:
 	docker stop $(CONTAINER_NAME)
 	docker rm $(CONTAINER_NAME)
 
-# Help
 help:
 	@echo "Makefile commands:"
 	@echo "make build - Build the Docker image"
