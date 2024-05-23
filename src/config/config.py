@@ -42,6 +42,11 @@ class Settings(BaseSettings):
     DATABASE_URL: StrictStr
     GPT_TOKEN: SecretStr
 
+    PROXY_HOST: StrictStr
+    PROXY_PORT: StrictStr
+    PROXY_USERNAME: StrictStr
+    PROXY_PASSWORD: StrictStr
+
     # class Config:
     #     # Assuming 'current_dir' is defined; otherwise, you might use os.getcwd() or similar
     #     env_file = os.path.join(current_dir, '.env')
