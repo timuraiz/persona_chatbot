@@ -21,8 +21,9 @@ class CheckAccessMiddleware(BaseMiddleware):
                 await User.update(user.id, chat_id=message.chat.id)
             logging.info('Handler was processed')
         else:
-            await message.answer(BOT_REPLIES['general']['bot_is_not_allowed'])
+            await User.create(username=message.from_user.username, chat_id=message.chat.id)
+            # await message.answer(BOT_REPLIES['general']['bot_is_not_allowed'])
             logging.info(f'Bot isn\'t allowed for this chat_id={message.chat.id}')
-            return
+            user: User = await User.get_by_username(message.from_user.username)
         data['user_id'] = user.id
         await handler(message, data)
